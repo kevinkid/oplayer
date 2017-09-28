@@ -2,23 +2,16 @@
 <head>
     <!-- [ui-framework] -->
     <link rel="stylesheet" type="text/css" href="theme/themes/charcoal/css/Content.css" />
-    <!-- <link rel="stylesheet" type="text/css" href="theme/themes/charcoal/css/Core.css" /> -->
     <link rel="stylesheet" type="text/css" href="theme/themes/charcoal/css/Layout.css" />
-    <script type="text/javascript" src="ui/scripts/mocha.js"></script>
-    <script type="text/javascript" src="ui/scripts/mocha-init.js"></script>
-    <script type="text/javascript" src="js/libs/moment.min.js"></script>
-    <script type="text/javascript" src="js/libs/id3.min.js"></script>
     <!-- [end ui-framework]-->
-    <link rel="stylesheet" href="css/libs/jquery.mCustomScrollbar.css" />
     <link rel="stylesheet" href="css/libs/bootstrap.css" />
     <link rel="stylesheet" href="css/player.css" />
-    <link rel="stylesheet" href="css/player.less" />
     <script type="text/javascript" src="js/libs/jquery-1.11.0.min.js"></script>
 </head>
 <body ng-controller="AppLaunch as launchCtrl">
     <div id="sideColumn1" class="mui-column expanded">
         <div ng-controller="trackListCtrl as tracklist" data-main="content" id="desktop main-view">
-            <div id="desktopHeader">
+            <header id="desktopHeader">
                 <div id="desktopTitlebarWrapper">
                     <div id="desktopTitlebar">
                         <div class="applicationTitle">
@@ -33,64 +26,48 @@
 	                        </div>
 	                        <div id="VolumeControl" class="VolumeControl glyphicon glyphicon-volume-down"></div>
                         </div>
-                        <div class="tagline">
-                            <div class="virtualizerWrap">
-                                <canvas id="virtualizer" width="440" height="45" style="margin-top: 11px;margin-left: 32%;"></canvas>
-                                <div class="musicProgresBarWrap"></div>
-                            </div>
-                        </div>
-                        <div id="topNav">
-                            
-                        </div>
                     </div>
                 </div>
                 <div id="desktopNavbar" class="mui-desktopNav mui-toolbardock">
-                    <div id="desktopNavToolbar0" class="mui-toolbar mui-menu mui-divider left">
-                    </div>
                     <div id="player">
                         <div class="fa musicDetails" id="controls-musicDet">
                             <div id="musicDetails">
-                                <section id="trackProgress-wrap" class="trackProgress-wrap">
-                                    <span id="trackProgress-base" class="trackProgress-base"></span>
-                                    <span id="timeControlBase" class="timeControlBase"></span>
-                                    <span class="timeControl" id="timeControl">
-                                        1:00:23
-                                    </span>
-                                    <small id="timeLeft" class="timeLeft">
-                                        <hrs></hrs>
-                                        <mins>- -</mins> :
-                                        <secs>- -</secs>
-                                    </small>
-                                    <aside class="songRating">
-                                        <span class="glyphicon glyphicon-star rating"></span>
-                                        <span class="glyphicon glyphicon-star rating"></span>
-                                        <span class="glyphicon glyphicon-star rating"></span>
-                                        <span class="glyphicon glyphicon-star rating"></span>
-                                        <span class="glyphicon glyphicon-star rating"></span>
-                                    </aside>
+                                <section>
                                     <aside class="musicDetails-right">
-                                    <center>
-                                         <small id="musicName" class="musicName"></small>
-                                        <small id="musicAlbum"></small>
-                                    </center>
-                                        <small id="SongDuration" class="SongDuration">
-                                            <hrs></hrs>
-                                            <mins>- -</mins>:
-                                            <secs>- -</secs>
-                                        </small>
-                                    </aside>
+                                        <center>
+                                            <div class="details">
+                                                <small id="timeLeft" class="timeLeft">
+                                                    <hrs></hrs>
+                                                    <mins>- -</mins> :
+                                                    <secs>- -</secs>
+                                                </small>
+                                                <small id="musicName" class="musicName"></small>
+                                                <small id="musicAlbum"></small>
+                                                <small id="SongDuration" class="SongDuration">
+                                                    <hrs></hrs>
+                                                    <mins>- -</mins> :
+                                                    <secs>- -</secs>
+                                                </small>
+                                            </div>
+                                        </center>
+                                    </aside> 
+                                </section>
+                                <section id="trackProgress-wrap" class="trackProgress-wrap">
+                                    <span id="trackProgress-base" class="trackProgress-base"></span>                                        
+                                    <svg width="0" id="progress" height="10" xmlns="http://www.w3.org/2000/svg" style="margin-top: -5px;">
+                                        <g>
+                                            <line transform="rotate(0.20000000298023224 482.3894653320313,4.916666030884406) " stroke="#FF7F50" stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_1" y2="2.916666" x2="967.896251" y1="6.916666" x1="-3.117344" stroke-width="1.5" fill="none"/>
+                                        </g>
+                                    </svg>
+                                    <span id="timeControlBase" class="timeControlBase"></span>
+                                    <span class="timeControl" id="timeControl"> 1:00:23 </span>
                                 </section>
                             </div>
                         </div>
-                       <!--[TODO: Reposition these ]  <div class="playlistControls">
-                            <div id="EqualizerControl" class="EqualizerControl">
-                                <span class="glyphicon glyphicon-align-left"></span>
-                            </div>
-                        </div>
- -->                    </div>
-                </div><!-- desktopNavbar end -->
-            </div><!-- desktopHeader end -->
-            <!-- [my view] -->
+                    </div>
+                </div>
+            </header>
+            <!-- [main view] -->
             <div ng-controller="UITabs as tabCtrl" class="row view-wrapper">
                 <!-- [left side ] -->
                 <div class="col-xs-3 col-sm-3 col-md-3 left-side" id="left-side">
@@ -111,7 +88,6 @@
                             <span class="syncTabIcon"></span>
                             <a class="SyncTab">Sync</a>
                         </li>
-                        <!-- TODO: Make this unvisibible  -->
                         <li ng-click="tabCtrl.setView(5)">
                             <span class="videPlayerIcon"></span>
                             <a class="videoTab">Video</a>
@@ -121,25 +97,24 @@
                                 <span class="glyphicon glyphicon-search">
                                     <input class="searchBar" type="text" placeholder="Title,Artist,Album">
                                 </span>
-                                <!-- <a class="searchBar">Search</a> -->
                             </div>
                         </li>
                     </ul>
                 </div>
                 <!-- [right side ] -->
                 <div id="tabsView" class="col-xs-9 col-sm-9 col-md-9 right-side">
-                    <!-- [list track view] -->
+                    <!-- [tracklist view] -->
                     <div class="LocalTabView" ng-show="tabCtrl.getView()==1" id="wlistLinkWindow_contentBorder" class="mui-windowContentBorder">
                         <div id="wlistLinkWindow_contentWrapper" class="mui-windowContentWrapper">
-                            <div id="wlistLinkWindow_content" class="mui-windowContent pad" style="padding: 0px; overflow: auto;">
+                            <div id="wlistLinkWindow_content" class="mui-windowContent pad" style="padding: 0px; overflow: auto;overflow-x: hidden;">
                                 <div class="table-top">
                                     <span class="hColOne">Title</span>
                                     <span class="hColTwo">Artist</span>
                                     <span class="hColThree">Album</span>
-                                    <span class="hColFour">Duration</span>
+                                    <span class="hColFour">Time</span>
                                 </div>
                                 <div id="wlistLinklist1" class="mui-list">
-                                    <table id="table" cellspacing="0" cellpadding="5" style="position: relative;width:590px;">
+                                    <table id="table" cellspacing="0" cellpadding="5" style="position: relative;width:765px;">
                                         <tbody id="track-list" class="track-list">
                                         </tbody>
                                         <tfoot>
@@ -149,116 +124,47 @@
                             </div>
                         </div>
                     </div>
-                    <!-- [grid track view] -->
+                    <!-- [tracklist view] -->
                     <div class="PlaylistTabView" ng-show="tabCtrl.getView()==2">
-                        <p style="color:grey;background-color: white;">
-                            <center>
-                                <b>Noise Reduction : </b><input type="checkbox" id="noiseReduction">
-                                <br>
-                                <b>CrossFade : </b><input type="checkbox" id="crossFade">
-                                <br>
-                                <div id="EqualizeWrap" class="EqualizeWrap" style="border: 1px solid black; width: 80%; height: 40%;border-radius: 5px;">
-
-                                    <div style="float: left; padding:10px;position: absolute;">
-                                        <b>Equalizer : </b><input type="checkbox" id="equalize">
-                                    </div>
-                                    <br>
-                                    <span style="color:gray;position:absolute;margin-top:-10px;margin-left:10%;float: right;cursor:default;">Frequency ranges in kilo Hz</span>
-                                    <div id="Equalize" class="row Equalize">
-                                        <div class="freq-1 col-xs-1 col-sm-1 col-md-1">
-                                            <b>2.5</b>
-                                            <input id="256hz" step="0.0001" type="range" min="-1" max="1" value="0">
-                                        </div>
-                                        <div class="freq-2 col-xs-1 col-sm-1 col-md-1">
-                                            <b>5.1</b>
-                                            <input id="512hz" step="0.0001" type="range" min="-1" max="1" value="0">
-                                        </div>
-                                        <div class="freq-3 col-xs-1 col-sm-1 col-md-1">
-                                            <b>1k</b>
-                                            <input id="1024hz" step="0.0001" type="range" min="-1" max="1" value="0">
-                                        </div>
-                                        <div class="freq-4 col-xs-1 col-sm-1 col-md-1">
-                                            <b>2k</b>
-                                            <input id="2048hz" step="0.0001" type="range" min="-1" max="1" value="0">
-                                        </div>
-                                        <div class="freq-5 col-xs-1 col-sm-1 col-md-1">
-                                            <b>4k</b>
-                                            <input id="4096hz" step="0.0001" type="range" min="-1" max="1" value="0">
-                                        </div>
-                                        <div class="freq-6 col-xs-1 col-sm-1 col-md-1">
-                                            <b>8k</b>
-                                            <input id="8192hz" step="0.0001" type="range" min="-1" max="1" value="0">
-                                        </div>
-                                        <div class="freq-7 col-xs-1 col-sm-1 col-md-1">
-                                            <b>16k</b>
-                                            <input id="16384hz" step="0.0001" type="range" min="-1" max="1" value="0">
-                                        </div>
-                                    </div>
-                                </div>
-                                <br>
-                                <b>Add other muisic folders</b>
-                                <br>
-                                <button id="addMediaPath" class="k-button">Add Folder</button>
-                                <br>
-                                <input id="diskMusic" type="file" />
-                                <br>
-                                <b>Idx : </b><input id="inputIndex" type="number" />
-                                <br>
-                                <button id="getData">Get Meta</button>
-                                <br>
-                                <div class="metalog" style="color:black;"></div>
-                            </center>
+                        <center>
+                            <p style="color:grey;background-color: white;">
+                                Cooming soon
+                            </p>
+                        </center>
                     </div>
                     <div class="OnlineTabView" ng-show="tabCtrl.getView()==3" id="wlistLinkWindow_contentBorder">
-                        <div class="resize-wrap">
-                            <span id="resize" class="resize-max"></span>
-                        </div>
-                        <webview autosize="on"  class="webview" src="http://www.bbc.co.uk/programmes/p02nrvtx/episodes/downloads" />
+                        <webview autosize="on"  class="webview" src="https://last.fm" />
                         <!-- https://www.microsoft.com/en-us/store/music/track/drake/more-life/passionfruit/8d6kgwxcp3j9 -->
                         <!-- https://22tracks.com [22 tracks website ] -->
-                        <!--- http://www.bbc.co.uk/iplayer -->
+                        <!-- http://www.bbc.co.uk/iplayer -->
                         <!-- http://www.bbc.co.uk/programmes/p02nrvtx/episodes/downloads -->
                         <!-- https://last.fm -->
 						<!-- https://8tracks.com/ -->
                         <!-- https://play.spotify.com -->
                         <!-- https://www.apple.com/music -->
-                        <!--[TODO: download me :) ] https://www.youtube.com/watch?v=a1GvTw401eE -->
                         <!-- https://soundcloud.com/liluzivert/15-xo-tour-llif3/ -->
                     </div>
-
-                    <!-- [sync web view] -->
+                    <!-- [sync view] -->
                     <div id="SyncTabView" class="SyncTabView" ng-show="tabCtrl.getView()==4">
                         <center>
-                            <a id="installBtn" href="#">install</a>
-                            <br>
-                            <a onclick="chrome.webstore.install('https://chrome.google.com/webstore/detail/itemID',function() {
-                                  console.log('successfull install .');
-                                  }, function () {
-                                    console.log('Error install');
-                              });">Try</a>
+                            Coming soon 
                         </center>
                     </div>
                     <!-- [video player] -->
                     <div class="videoPlayerTabView" ng-show="tabCtrl.getView(5)" id="videoPlayerTabView">
-                        <div class="resize-wrap">
-                            <span id="resize" class="resize-max"></span>
-                        </div>
                         <video id="videPlayer" preload="none" src="null" autoplay></video>
                     </div>
-                    <!-- [video player] -->
-                </div> <!--  right side -->
-            </div><!-- my view -->
-               <input id="volumeRange" class="volumeRange" type="range" max="1" min="-1" step="0.0001" value="-0.72">
+                </div>
+            </div>
+            <input id="volumeRange" class="volumeRange" type="range" max="1" min="-1" step="0.0001" value="-0.72">
         </div>
         <section id="preloaderWrap" class="preloaderWrap-closed">
             <div class="preloader-overlayGradient">
-                <!--<center>-->
-                    <h3>Welcome :)</h3>
-                    <p>
-                        You can enjoy streaming music and movies from here.
-                    </p>
-                    <small>Scanning files ...</small>
-                <!--</center>-->
+                <h3>Welcome :)</h3>
+                <p>
+                    You can enjoy streaming music and movies from here.
+                </p>
+                <small>Scanning disk</small>
             </div>
         </section>
     </div>
@@ -283,56 +189,22 @@
             </small>
         </div>
     </div>
-    <!-- [reload scripts] -->
-    <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
-    <!-- [reload scripts]  -->
     <!-- [libs] -->
     <script type="text/javascript" src="js/libs/angular.js"></script>
-
-    <script type="text/javascript" src="js/libs/spin.min.js"></script>
-    <!-- [react test] -->
-    <!-- <script src="js/libs/react.js"></script>
-    <script src="js/libs/react-dom.js"></script>
-    <script src="https://unpkg.com/react@15/dist/react.js"></script>
-    <script src="https://unpkg.com/react-dom@15/dist/react-dom.js"></script>
-    <script type="text/javascript" src="js/libs/babel.min.js"></script> -->
-
-    <!-- <script type="text/javascript" src="js/components/layout.js"></script> -->
-    <script type="text/babel" src="js/components/layout-test.jsx">
-    </script>
-<!-- [custom scrollbar] -->
     <script type="text/javascript" src="js/libs//jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="js/libs/jquery.mCustomScrollbar.concat.min.js"> </script>
-<!-- [custom scrolbar] -->
-    <!-- [libs] -->
-    <!-- [helpers] -->
+    <!-- [other] -->
+    <script type="text/javascript" src="js/utils.js"></script>
     <script  type="text/javascript"  src="js/helper/storage.js"></script>
     <script type="text/javascript" src="js/helper/Meta.js"></script>
-    <script type="text/javascript" src="js/helper/keyboard.js"></script>
-    <script type="text/javascript" src="js/helper/mouse.js"></script>
-    <!-- [helpers] -->
+    <!-- [main] -->
     <script type="text/javascript" src="js/app.js"></script>
     <link rel="stylesheet" href="css/player.css" />
-    <script type="text/javascript" src="js/settings.js"></script>
-    <script type="text/javascript" src="js/helper/platform.js"></script>
     <script type="text/javascript" src="js/processor.js"></script>
-    <script type="text/javascript" src="js/worker.js"></script>
-    <script type="text/javascript" src="js/origins.js"></script>
-    <script type="text/javascript" src="js/PlaybackSync.js"></script>
-    <script type="text/javascript" src="js/visualizer.js"></script>
-    <script type="text/javascript" src="js/eventHandler.js"></script>
+    <script type="text/javascript" src="js/scanner.js"></script>
+    <script type="text/javascript" src="js/playbackSync.js"></script>
+    <script type="text/javascript" src="js/handler.js"></script>
     <script type="text/javascript" src="js/player.js"></script>
     <script type="text/javascript" src="js/ui.js"></script>
     <script type="text/javascript" src="js/controllers.js"></script>
-
-    <!--[TODO: Remove me  after testing ] -->
-    <!--<script type="text/javascript">
-                toggleNotification = false;
-        $('[data-main="content"]').removeClass('loading');
-        $("#main-view").removeAttr("class");
-        $("#desktopFooterWrapper").removeAttr("class");
-        $(".preloaderWrap-open").attr("class", "preloaderWrap-closed");
-        $(".preloader-open").attr("class", "preloadep-cloed");
-    </script>-->
 </body>
 </html>

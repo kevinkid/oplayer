@@ -1,9 +1,8 @@
-// AUTHOR: bigkevzs
 ;(function () {
     'use strict';
 
     /**
-     * @desc - Gets the metadata for a specified file
+     * @description - Gets the metadata for a specified file
      * @todo - This implementation calls the callback twice, fix it ! 
      * @todo - Speed up runtime for this file by reducing the number of calls .
      */
@@ -158,15 +157,18 @@
         return name;
     },
 
-    /** @desc - Calculates duration from file . */
+    /** @description - Calculates duration from file . */
     MetaHelper.__proto__.getDurationFromBin = function (file, meta, callback) {
         try {
             var audioTag = null;
-                audioTag = document.createElement('audio');
-                audioTag.addEventListener("canplaythrough", function (ev) {
+            audioTag = document.createElement('audio');
+            audioTag.addEventListener("canplaythrough", function (ev) {
+                meta.title === ""? meta.title = undefined : null;
+                (meta.album === undefined || meta.album === "")? meta.album = undefined: null;
+                meta.artist[0] === undefined ? meta.artist = undefined: meta.artist = meta.artist[0];
                 var time = ev.currentTarget.duration; // [ms]
-                meta.name = meta.name || MetaHelper.parseFileName(file.name);
-                meta.title = meta.title || MetaHelper.parseFileName(file.name);
+                meta.name = meta.name || MetaHelper.parseFileName(meta.name);
+                meta.title = meta.title || MetaHelper.parseFileName(meta.name);
                 meta.stackSize =  meta.stackSize;
                 meta.artwork =  MetaHelper.createImageArtwork(meta.image) || null;
                 meta.duration = {
@@ -176,10 +178,10 @@
                     seconds: MetaHelper.durationConverter(time, 'seconds')
                 };
                 file = null;
-                callback(meta);
+                onFinish(meta, meta, callback);
             });
-            audioTag.src = URL.createObjectURL(file);
-        } catch (_ex) {
+            audioTag.src = `file:///${meta.path}`;
+        } catch (ex) {
             file = null;
             throw new Error({message: "Error getting duration ."});
         }
@@ -423,8 +425,9 @@
         }
     }
 
-    function onFinish(oldMeta, newMeta, _callback) {
-        _callback({
+    function onFinish(oldMeta, newMeta, callback) {
+        callback({
+            path: oldMeta.path         || newMeta.path,
             name: oldMeta.name         || newMeta.name    || "unknown name",
             title: oldMeta.title       || newMeta.title   || "unknown title",
             artist: oldMeta.artist     || newMeta.artist  || "unknown artist",
@@ -462,7 +465,7 @@
                (bytes >> 1) /(0x3FF) + (units[Math.floor(Math.log(bytes) / Math.log(0x3FF))] || units[units.length - 1]);
     }
 
-    /** @desc {Object} - Attempt to slice large files but retry onfail */
+    /** @description {Object} - Attempt to slice large files but retry onfail */
     // NOTE: Remember we cannot try to implement promises in this file .
     function failSafeReader(_file, callback) {
         if(_file)
@@ -519,7 +522,7 @@
         }
     }
 
-    /** @desc - Get metadata */
+    /** @description - Get metadata */
     MetaHelper.__proto__.getMetaFromFileEntry = function (index, callback) {
         try {
             if (typeof (parseInt(index)) != "number") {

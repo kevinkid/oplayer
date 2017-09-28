@@ -1,20 +1,37 @@
-/** @desc - syncs background tasks of the applicatioan . */
 
-// @docs -  https://developers.google.com/web/fundamentals/getting-started/primers/service-workers
+var worker = {};
+var imgLoaded = false;
 
-var worker = {
+worker.prototype.isOnline = function () {
+    var imgSource = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png";
+    var temp = document.createElement("img");
+    temp.setAttribute("temp-img","image");
+    var bodyEl = document.body;
+    temp.src = imgSource;
+    bodyEl.appendChild(temp);
+    $('[temp-img]').on('load', function(event) {
+        imgLoaded = true;
+    });
+    imgLoaded = true;
+}
 
-    onWebRequest: function (ev) {
-      if (ev.permission === "download") {
-          console.info("web permission request .");
-          this.requestDownload(ev);
-      }  
-    },
+worker.prototype.changeConnectionStatus = function (status) {
+    worker.connected = status;
+}
 
-    requestDownload: function (ev) {
-          console.info("[download request ]");
-          console.dir(ev);
-          e.request.allow();
+worker.prototype.pingConnection = function () {
+    return imgLoaded;
+}
+
+worker.prototype.onWebRequest = function (ev) {
+    if (ev.permission === "download") {
+        this.requestDownload(ev);
     }
+}
 
-};
+worker.prototype.requestDownload = function (ev) {
+    e.request.allow();
+}
+
+document.body.ononline = function () {}
+document.body.onoffline = function () {}    

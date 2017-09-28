@@ -1,14 +1,3 @@
-/**
- * @desc - visualizes the music playback
- * @todo - fix the memory leak in here
- * @refs - [  https://developers.google.com/web/tools/chrome-devtools/memory-problems/  ]
- * @refs - [  https://auth0.com/blog/four-types-of-leaks-in-your-javascript-code-and-how-to-get-rid-of-them/  ]
- * @todo - write something to level up the bars during animation.
- * @todo - write something to make sure the bars come down after playback is paused or stopped
- * @todo - Reduce animation by blocking a frame request.
- */
-'use strict';
-
 
 var isIntialPlay = true,
 	musicBarAnimation;
@@ -28,40 +17,36 @@ var cContext = canvas.getContext("2d");
 var colors = [
 	"#F95B34", "#F95B34", "#f96b49", "#f96b49",
 	"#fa7b5d", "#fa7b5d", "#fa8c71", "#fa8c71"
-	/*red*/,
+	/*red shades*/,
 	"#EE3E64", "#EE3E64", "#ef5173", "#ef5173",
 	"#f16483", "#f16483", "#f37792", "#f37792"
-	/*pink*/,
+	/*pink shades*/,
 	"#F36283", "#F36283", "#f4718f", "#f4718f",
 	"#f5819b", "#f5819b", "#f691a8", "#f691a8"
-	// /*pink*/,
+	// /*pink shades*/,
 	// "#FF9C34","#FF9C34", "#ffa548","#ffa548",
 	// "#ffaf5c","#ffaf5c", "#ffb970","#ffb970"
-	/*orange*/,
+	/*orange shades*/,
 	"#EBDE52", "#EBDE52", "#d3c749", "#d3c749",
 	"#bcb141", "#bcb141", "#a49b39", "#a49b39"
-	/*yellow & greens*/,
+	/*yellow & greens shades*/,
 	"#B7D84B", "#B7D84B", "#a4c243", "#a4c243",
 	"#92ac3c", "#92ac3c", "#809734", "#809734"
-	/*blues*/,
+	/*blues shades*/,
 	"#0875c9", "#0875c9", "#0769b4", "#0769b4",
 	"#065da0", "#065da0", "#05518c", "#05518c"
-	/*indigo*/,
+	/*indigo shades*/,
 	"#330099", "#330099", "#4719a3", "#4719a3",
 	"#5b32ad", "#5b32ad", "#704cb7", "#704cb7"
-	/*violet*/,
+	/*violet shades*/,
 	"#551a8b", "#551a8b", "#4c177d", "#4c177d",
 	"#44146f", "#44146f", "#3b1261", "#3b1261"
 ];
 
-
-
-/**
- * @desc - Animates the music bars
- */
-function AnimateBars(_analyser) {
-    var array = new Uint8Array(_analyser.frequencyBinCount);
-    _analyser.getByteFrequencyData(array);
+/// music bars animation
+function AnimateBars(analyser) {
+    var array = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(array);
     var step = Math.round(array.length / meterNum);
     cContext.clearRect(0, 0, canWidth, canHeight);
     if (player.state) {
@@ -70,7 +55,7 @@ function AnimateBars(_analyser) {
             if (capYPositionArray.length > Math.round(meterNum)) {
                 capYPositionArray.push(value);
             }
-            cContext.fillStyle = colors[i];// capstyle
+            cContext.fillStyle = colors[i];
             if (value < capYPositionArray[i]) {
                 cContext.fillRect(i * gap, canHeight - (--capYPositionArray[i]),
 				meterWidth, capHeight);
@@ -80,26 +65,13 @@ function AnimateBars(_analyser) {
             cContext.fillStyle = colors[i];
             cContext.fillRect(i * gap, canHeight - value + canHeight, meterWidth, canHeight);
         }
-    }
+	}
+	// NOTE: There is a perfomance issue with this method 
     requestAnimationFrame(function () {
-        AnimateBars(_analyser);
+        AnimateBars(analyser);
     });
 }
-
-/**
- * @desc -reduce framerequest .
- */
-function blockAnimationFrame() {
-
-
-
-
-}
-
-
-/**
- * @desc - Music Bars animation controller .
- */
-function oVirtualize(_analyser) {
-    AnimateBars(_analyser);
+// start visualiser
+function oVirtualize(analyser) {
+    AnimateBars(analyser);
 }

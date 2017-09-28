@@ -13,7 +13,7 @@ let mainWindow;
 function createWindow () {
 
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 1400, height: 800, frame: false});//800/600
+  mainWindow = new BrowserWindow({width: 970, height: 700, frame: false, resizable: false });//800/600
 
   // and load the index.html of the app.
   mainWindow.loadURL('file://' + __dirname + '/src/player.html'); 
@@ -21,8 +21,8 @@ function createWindow () {
   // remove menuBar
   mainWindow.setMenu(null);
 
-  //prevent resize for now
-  mainWindow.isResizable(false);
+  //disable window resize
+  // mainWindow.setResizable(false);
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();

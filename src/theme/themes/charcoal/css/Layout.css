@@ -49,7 +49,7 @@ body {
 #desktopTitlebar {
 	padding: 7px 8px 6px 8px;
 	height: 52px;
-	background: url(../images/logo.gif) no-repeat;
+	/* background: url(../images/logo.gif) no-repeat; */
 	background-size: 210px 50px;
 	background-position: left 0;
 }

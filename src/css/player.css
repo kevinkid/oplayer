@@ -1,7 +1,11 @@
 @font-face {
     font-family: 'Glyphicons Halflings';
     src: url(../fonts/glyphicons-halflings-regular.eot);
-    src:url(../fonts/glyphicons-halflings-regular.eot?#iefix) format('embedded-opentype'),url(../fonts/glyphicons-halflings-regular.woff2) format('woff2'),url(../fonts/glyphicons-halflings-regular.woff) format('woff'),url(../fonts/glyphicons-halflings-regular.ttf) format('truetype'),url(../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg')
+    src:url(../fonts/glyphicons-halflings-regular.eot?#iefix) format('embedded-opentype'),
+        url(../fonts/glyphicons-halflings-regular.woff2) format('woff2'),
+        url(../fonts/glyphicons-halflings-regular.woff) format('woff'),
+        url(../fonts/glyphicons-halflings-regular.ttf) format('truetype'),
+        url(../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg')
 }
 
 /*
@@ -13,13 +17,16 @@ html ,body {
   margin:0;
   width:100%;
   height:100%;
+  overflow: hidden;
+  --webkit-user-select: none;
+  user-select: none;
 }
 webview {
   width: 100%;
   height: 100%;
   border: 1px solid black;
   scroll-behavior: smooth;
-  margin-left: -97%;
+  margin-left: 0;
 
 }
 * {
@@ -125,9 +132,12 @@ span:hover {
   height:100%;
 }
 
+#desktopHeader {
+  -webkit-app-region: drag;
+}
 
 .applicationTitle {
-  -webkit-app-region:drag;
+  --webkit-app-region: drag;
 }
 
 .applicationTitle {
@@ -140,7 +150,7 @@ span:hover {
   }
 
 #desktopTitlebar {
-  padding: 0px 0px 0px 5px;
+  padding: 0px 0px 0px 10px;
   margin-top: -8px;
   height: 90px !important;
   background-size: 211px 80px !important;
@@ -166,8 +176,8 @@ span:hover {
     position: absolute;
     font-size: smaller;
     margin-top: 25px;
-    margin-left: 28px;
-    padding-left: 20px;
+    margin-left: 20px;
+    padding-left: 28px;
     /* border: 1px solid pink; */
   }
   .applicationTitle > span:nth-child(2) {
@@ -177,7 +187,7 @@ span:hover {
     position: absolute;
     font-size: small;
     margin-top: 18px;
-    margin-left: 67px;
+    margin-left: 72px;
     /* border: 1px solid pink; */
  }
   .applicationTitle > span:nth-child(3) {
@@ -185,7 +195,7 @@ span:hover {
     height: 40.4px;
     box-shadow: inset 0px 1px 6px -1px black;
     margin-top: 12px;
-    margin-left: 102px;
+    margin-left: 109px;
     margin-right: 5px;
     position: absolute;
     /* border: 1px solid pink; */
@@ -197,14 +207,14 @@ span:hover {
     box-shadow: inset 0px 1px 6px -1px black;
     position: absolute;
     margin-top: 18px;
-    margin-left: 146.3px;
+    margin-left: 155.3px;
     /* border: 1px solid pink; */
  }
 
   .applicationTitle > div:nth-child(5) {
     margin-top: 25px;
-    margin-left: 185px;
-    padding-left: 0;
+    margin-left: 183px;
+    padding-left: 15px;
     width: 15px;
     height: 18px;
     position: absolute;
@@ -214,7 +224,7 @@ span:hover {
   .applicationTitle > div:nth-child(6) {
     margin-top: 24px;
     margin-left: 210px;
-    padding-left: 0;
+    padding-left: 15px;
     width: 15px;
     height: 23px;
     position: absolute;
@@ -316,9 +326,9 @@ span:hover {
       border: 0px solid #a12727;
       border-radius: 100px;
       background: #9e9e9e;
-      background: -webkit-gradient(linear, left top, left bottom, from(#9e9e9e), to(#383838));
-      background: -moz-linear-gradient(top, #9e9e9e, #383838);
-      background: linear-gradient(to bottom, #9e9e9e, #383838);
+      background: -webkit-gradient(linear, left top, left bottom, from(#383838), to(#404040));
+      background: -moz-linear-gradient(top, #383838, #404040);
+      background: linear-gradient(to bottom, #383838, #404040);
       text-shadow: #591717 1px 1px 1px;
       font: normal normal bold 20px arial;
       color: #ffffff;
@@ -328,9 +338,9 @@ span:hover {
   .button:hover,
   .button:focus {
       background: #bebebe;
-      background: -webkit-gradient(linear, left top, left bottom, from(#bebebe), to(#434343));
-      background: -moz-linear-gradient(top, #bebebe, #434343);
-      background: linear-gradient(to bottom, #bebebe, #434343);
+      background: -webkit-gradient(linear, left top, left bottom, from(#404040), to(#434343));
+      background: -moz-linear-gradient(top, #404040, #434343);
+      background: linear-gradient(to bottom, #404040, #434343);
       color: #ffffff;
       text-decoration: none;
   }
@@ -349,7 +359,7 @@ span:hover {
       line-height: 24px;
       /* margin: 0 4px -6px -4px; */
       position: relative;
-      top: 0px;
+      top: 1px;
       left: 0px;
   }
 
@@ -425,7 +435,7 @@ desktopTitlebar bottom left
   position: absolute;
   z-index: 900900;
   margin-top: -3px;
-  margin-left: -795px;
+  margin-left: -969px;
   padding:0;
   width:0px;
   height:1px;
@@ -435,12 +445,16 @@ desktopTitlebar bottom left
 
 }
 
+.trackProgress-wrap aside {
+  -webkit-app-region: drag;
+}
+
 .trackProgress-base {
   padding: 0px;
   position: inherit;
   z-index: 899;
   margin-top: -1px;
-  width: 800px;
+  width: 970px;
   height: 1px;
   background: #FF7F50;
   cursor: pointer;
@@ -457,9 +471,9 @@ desktopTitlebar bottom left
 }
 
 div#musicDetails * {
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 500;
-    color: #cfcfcf;
+    color: #565656;
 }
 
 .musicDetails > small {
@@ -472,19 +486,24 @@ div#musicDetails * {
 .musicDetails-right {
   float: left;
   margin-top: 1px;
-
+  margin-left: 25px !important;
+  position: absolute;
+  z-index: 900900;
+  margin-top: 13px;
+  top: 34px;
+  left: -10px;
 }
+
 
 .timeControlBase {
   position: inherit;
   z-index: 899;
   margin-top: -4px;
-  width: 799px;
-  height:8px;
+  width: 970px;
+  height: 10px;
   background-color: transparent;
   cursor: pointer;
   /*border:1px solid violet;*/
-
 
 }
 
@@ -503,6 +522,7 @@ div#musicDetails * {
   background-image: ('icons/connector.png');
   background-position: 0 0;
   background-size: 5px;
+  font-size: 10px !important;
 }
 
 .songRating {
@@ -597,51 +617,66 @@ div#musicDetails * {
 
  }
 
+ .details {
+  position: absolute;
+  z-index: 0;
+  top: -38px;
+  left: 280px;
+  width: 500px;
+  height: 30px;
+  background: white;
+  border-radius: 3px;
+  -webkit-app-region:drag;
+
+ }
 
 small.timeLeft {
-  position: absolute;
+  position: relative;
   z-index: 9898;
-  margin-left: 212px;
-  margin-top: -31px;
+  margin-left: -65px;
+  margin-top: 10px;
   display: inline-block;
   font-weight: lighter;
   width: 200px;
   font-size: 12.5px;
+  float: left;
+  
 }
 
 small#musicName {
-  position: absolute;
-  z-index: 9899;
+  position: relative;
   float: left;
-  margin-left: 251px;
-  margin-top: -28px;
-  font-weight: lighter;
+  margin-left: 50px;
+  margin-top: -16px;
+  font-weight: bolder;
   font-size: 13.587px;
-  width:400px;
+  width: 400px;
   overflow-wrap: break-word;
+  color: #565656;
+  text-shadow: 3px 3px 3px lightgrey;
+
 }
 
 small#musicAlbum {
-
-  position: absolute;
-  z-index: 9899;
+  position: relative;
+  z-index: 9900;
   float: left;
-  margin-left: 251px;
-  margin-top: -43px;
+  margin-left: 50px;
+  margin-top: -30px;
   font-weight: lighter;
   font-size: 10px;
-  width:400px;
+  width: 400px;
   overflow-wrap: break-word;
-  color: rgba(255, 255, 255, 0.3);
+  color: #565656;
 
 }
 
 small.SongDuration {
-  position: absolute;
+  position: relative;
   z-index: 9999;
   float: right;
-  margin-left: 750px;
-  margin-top: -31px;
+  margin-right: -65px;
+  margin-top: -19px;
   font-size: smaller;
   font-weight: lighter;
   width: 200px;
@@ -758,63 +793,6 @@ input[type="range"] {
 
   }
 
-  .glyphicon-equalizer {
-    transform: rotate(-90deg);
-  }
-  .EqualizerControl {
-    cursor: pointer;
-    float: left;
-    padding: 13px 5px 0 10px;
-    font-size: 11px;
-    transform: rotate(-90deg);
-    background: transparent;
-
-  }
-
-  #EqualizerWrap {
-    border: 1px solid rgba(0,0,0,0.2);
-
-  }
-
-  .Equalize {
-    width: 100%;
-    height: 100%;
-    margin-top: 45px;
-    margin-left:10%;
-
-  }
-
-  .freq-1, .freq-2, .freq-3,
-  .freq-4, .freq-5, .freq-6,
-  .freq-7 {
-
-    text-align: center;
-  }
-
-  .freq-1 b + input, .freq-2 b + input,
-  .freq-3 b + input, .freq-4 b + input,
-  .freq-5 b + input, .freq-6 b + input,
-  .freq-7 b + input {
-
-    position:absolute;
-    width: 80px;
-    margin-top: 0%;
-    cursor: pointer;
-
-  }
-
-  .freq-1 b, .freq-2 b, .freq-3 b,
-  .freq-4 b, .freq-5 b, .freq-6 b,
-  .freq-7 b {
-
-    padding:0;
-    width:3px;
-    height:5px;
-    position: absolute;
-    margin-top:150%;
-    margin-left: 33px;
-  }
-
 
   .VolumeControl {
     position: inherit;
@@ -831,7 +809,7 @@ input[type="range"] {
     margin: 12px 100px;
     position: fixed;
     z-index: 25374689;
-    left: 30px;
+    left: 48px;
     top: 62px;
     width: 100px;
 
@@ -858,6 +836,10 @@ input[type="range"] {
 
 }
 
+.view-wrapper  {
+
+}
+
 
 /*
   left side
@@ -866,6 +848,7 @@ input[type="range"] {
   position:relative;
   width: 24%;/* NOTE: was 24% */
   background: #303030;
+  -webkit-app-region: drag;
 
 }
 
@@ -873,8 +856,8 @@ input[type="range"] {
   position: fixed;
   z-index: 80001;
   left: 0%;
-  top: 10.4%;
-  width: 202px;
+  top: 10.5%;
+  width: 210px;
   height: 425px;
   transition: left 0.3s ease;
 }
@@ -882,7 +865,7 @@ input[type="range"] {
   position: fixed;
   z-index: 8001;
   left: -196px;
-  top: 10.5%;
+  top: 10.8%;
   width: 202px;
   height: 420px;
   transition: left 0.5s ease;
@@ -893,7 +876,7 @@ input[type="range"] {
   position: fixed;
   z-index: 8001;
   left: 0px;
-  top: 10.2%;
+  top: 10.8%;
   width: 50px;
   height: 422px;
   transition: left 0.3s ease;
@@ -908,7 +891,7 @@ input[type="range"] {
   position: fixed;
   z-index: 8001;
   left: -100px;
-  top: 10.2%;
+  top: 10.8%;
   width: 50px;
   height: 422px;
   transition: left 0.5s ease;
@@ -919,16 +902,14 @@ input[type="range"] {
   visibility: hidden;
 }
 
-
   .left-side ul {
-    margin:-3px;
-    /*    width:117%;
-    height:80%;*/
+    margin: -26px 0;
     border-right: 1px solid #303030;
     background: #404040;
     padding: 5px 0;
     /*border: 1px solid red;*/
     box-shadow: 9px 0px 15px -10px rgba(0,0,0,0.35);
+    height: 100%;
   }
 
     .left-side ul li {
@@ -949,7 +930,7 @@ input[type="range"] {
       padding-top:20px;
       letter-spacing:1px;
       font-size: 13px;
-      height:8%;
+      height: 0%;
       background-color: #404040;
     }
 
@@ -958,7 +939,7 @@ input[type="range"] {
       padding-top:20px;
       letter-spacing:1px;
       font-size: 13px;
-      height:8%;
+      height: 0%;
     }
 
     /*browsersync tab*/
@@ -966,7 +947,7 @@ input[type="range"] {
       padding-top:20px;
       letter-spacing:1px;
       font-size: 13px;
-      height:8%;
+      height: 0%;
       background-color: #404040;
     }
 
@@ -975,7 +956,7 @@ input[type="range"] {
       padding-top:20px;
       letter-spacing:1px;
       font-size: 13px;
-      height:8%;
+      height: 0%;
       background-color: #404040;
     }
 
@@ -984,7 +965,7 @@ input[type="range"] {
       padding-top:20px;
       letter-spacing:1px;
       font-size: 13px;
-      height:8%;
+      height: 0%;
       background-color: #404040;
     }
 
@@ -1029,36 +1010,36 @@ input[type="range"] {
   visibility: hidden;
 }
 
-
 .LocalTabView {
-  height: 110%;
+  height: 109.6%;
+  margin-left: 8px;
 }
 
 
 .OnlineTabView {
   background-color: white;
   width: 100%;
-  height: 94.5%;
+  height: 88.8%;
   margin-right: 0;
-  margin-top: 34px;;
+  margin-top: 0;
+  margin-left: -55px;
+
 }
 
 
 .SyncTabView {
   background-color: white;
-  width:100%;
-  height: 85%;
-  margin-right:20px;
-
+  width: 150%;
+  height: 100%;
+  margin-right: 20px;
 
 }
 
 .PlaylistTabView {
   background-color: white;
-  width:100%;
-  height: 85%;
+  width: 151%;
+  height: 105%;
   margin-right:20px;
-
 
 }
 
@@ -1077,15 +1058,14 @@ input[type="range"] {
 
 }
 
-  .videPlayerTabView video {
-    width: 100%;
-    height: 93.6%;
-    margin-left: 1px;
-    border: 1px solid purple;
+  video {
+    width: 99%;
+    height: 88.5%;
+    margin-left: -55px;
+    /* border: 1px solid purple; */
     background: url(../icons/clapboard-icon.png) no-repeat;
     background-size: 200px;
-    background-position: 280px 100px;
-
+    background-position: 375px 160px;
 
   }
 
@@ -1188,7 +1168,6 @@ a.localtab, a.playlisttab, a.onlineTab,
   cursor: pointer;
 
 }
-
 .playlistTabIcon:before {
   margin-top: 10px;
   font-family: 'Glyphicons Halflings';
@@ -1206,7 +1185,6 @@ a.localtab, a.playlisttab, a.onlineTab,
   cursor: pointer;
 
 }
-
 .syncTabIcon:before {
   margin-top: 10px;
   font-family: 'Glyphicons Halflings';
@@ -1215,7 +1193,6 @@ a.localtab, a.playlisttab, a.onlineTab,
   cursor: pointer;
 
 }
-
 .videPlayerIcon:before {
   margin-top: 10px;
   font-family: 'Glyphicons Halflings';
@@ -1246,31 +1223,33 @@ td#wlistLinklist1_1_commands {
 }
 
 .mui-windowContentWrapper {
-  width: 102.4%;/*position of the scrollbar */
-  height: 76.5%;
-  overflow: auto;/*border-top: 1px solid darkgray;*//* border-bottom: 1px solid darkgray; */
-/* Scrollbar */
+  width: 130.5%;/*position of the scrollbar */
+  height: 81%;
+  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 .mCSB_scrollTools .mCSB_draggerContainer {
     top: 20px !important;
 }
-
+/*Scrollbar styles*/
+.mui-windowContentWrapper::-webkit-scrollbar-track-piece {
+    background: #404040;
+}
+.mui-windowContentWrapper::-webkit-scrollbar-button {
+    visibility: hidden;
+}
+.mui-windowContentWrapper::-webkit-scrollbar-thumb {
+    background: #cfcfcf;
+    border-radius: 27px;
+}
+.mui-windowContentWrapper::-webkit-scrollbar {
+    width: 5px;
+    background: #404040;
+}
 .mCSB_container {
     width: 100%;
 }
-
-
-/*.table-top span {
-  white-space: normal;
-  line-height: normal;
-  font-weight: normal;
-     position: fixed;
-    z-index: 90000001;
-    left: 36%;
-    font-size: 0.91em;
-    margin-top: 2px;
-
-}*/
 
 tr.active {
   border: 1px lightblue dotted;
@@ -1288,7 +1267,7 @@ tr.not-active {
   font-size: small;
   padding: 0;
   margin: 0px 0px;
-  width: 76%;
+  width: 80%;
   height: 20px;
   display: table-header-group;
   vertical-align: middle;
@@ -1315,13 +1294,13 @@ tr.not-active {
     font-size: 0.81em;
     margin-top: 2px;
     letter-spacing: 1px;
-     cursor: default;
+    cursor: default;
 
   }
   .table-top span:nth-child(2){
     position: fixed;
     z-index: 90000001;
-    left: 69%%;
+    left: 64%;
     font-size: 0.81em;
     margin-top: 2px;
     letter-spacing: 1px;
@@ -1331,7 +1310,7 @@ tr.not-active {
   .table-top span:nth-child(3){
     position: fixed;
     z-index: 90000001;
-    left: 81%;
+    left: 82%;
     font-size: 0.81em;
     margin-top: 2px;
     letter-spacing: 1px;
@@ -1341,18 +1320,17 @@ tr.not-active {
   .table-top span:nth-child(4){
     position: fixed;
     z-index: 90000001;
-    left: 91%;
+    left: 92%;
     font-size: 0.81em;
     margin-top: 2px;
     letter-spacing: 1px;
-     cursor: default;
+    cursor: default;
 
   }
 
 .table-top +span {
 
 }
-
 
 tr.head {
   font-size: small;
@@ -1372,8 +1350,6 @@ tr.head {
   margin-left:20px;
 }
 
-
-
 /* NOTE: Unused, but to be used in other places */
 .nothing > *:not(section) {
   filter:blur(1.5px);
@@ -1383,7 +1359,7 @@ tr.head {
 }
 
 .preloader-overlayGradient {
-  -webkit-app-region: drag;/*[PROD]*/
+  -webkit-app-region: drag;
   position: inherit;
   z-index: 90002;
   top:0;
@@ -1394,7 +1370,6 @@ tr.head {
   background-image: -webkit-linear-gradient(top, rgba(0,0,0,0.8), rgba(0,0,0,0.6));
   background-image: -moz-linear-gradient(top, rgba(0,0,0,0.8), rgba(0,0,0,0.6));
   background-image: linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,0.6));
-
 
 }
 
@@ -1492,7 +1467,6 @@ footer styles
   visibility: hidden;
 }
 
-
 .log_info_section {
   color: lightgray;/*todo : use the color as the grid icons*/
   position: absolute;
@@ -1500,8 +1474,6 @@ footer styles
   bottom: 2%;
 
 }
-
-
   .info1 {
     position: inherit;
     z-index: inherit;
@@ -1528,8 +1500,6 @@ footer styles
       -moz-animation: 0.5s Info_Animation_hide ease-out forwards;
 
     }
-
-
   .info2 {
     position: inherit;
     z-index: inherit;
@@ -1538,10 +1508,6 @@ footer styles
     bottom: -80px;
     margin: 0 25%;
     cursor: default !important;
-    /*animation-delay: 0.2s;
-    -webkit-animation-delay: 0.2s;
-    -o-animation-delay: 0.2s;
-    -moz-animation-delay: 0.2s;*/
     animation: 0.8s Info_Animation_2 ease-in forwards;
     -o-animation: 0.8s Info_Animation_2 ease-in forwards;
     -webkit-animation: 0.8s Info_Animation_2 ease-in forwards;

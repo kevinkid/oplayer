@@ -4,7 +4,7 @@
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
-    "start": "electron main.js"
+    "start": "/usr/local/bin/electron main.js"
   },
   "repository": {
     "type": "git",
@@ -24,5 +24,10 @@
   "homepage": "https://github.com/electron/electron-quick-start#readme",
   "devDependencies": {
     "electron-prebuilt": "^0.37.0"
+  },
+  "dependencies": {
+    "file-api": "^0.10.4",
+    "media-library": "^1.2.4",
+    "mime": "^2.0.2"
   }
 }

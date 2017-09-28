@@ -1,20 +1,22 @@
-/**
- * @desc - Acts like a middleware between event executions and player
- *         executions and the visuals .
- *
- */
 
-var PlaybackSync = {
+var fs = require('fs');
+var FileAPI = require('file-api');
+var File = FileAPI.File;
+var FileList = FileAPI.FileList;
+var FileReader = FileAPI.FileReader;
+const parentSize =  $progressWrap[0].scrollWidth;
+
+var playbackSync = {
 
     defaultPoster: function () {
         return document.createElement('img');
     },
 
     /** @returns {Number} - DomUpdate rate depending on playback rate . */
-    progressBarUpdateRate: function (_dur) {
-        if (!_dur.hours <= 0) {
-            if (_dur.minutes >= 0) {
-                if (_dur.seconds > 0) {
+    progressBarUpdateRate: function (duration) {
+        if (!duration.hours <= 0) {
+            if (duration.minutes >= 0) {
+                if (duration.seconds > 0) {
                     return 0;
                 } else {
                     return 25;
@@ -27,16 +29,16 @@ var PlaybackSync = {
         }
     },
 
-    updateProgressBar: function (_cur, _dur) {
-        _cur = (_cur - ((pauseOffset + initialTime + 1)) + seekOffset)<0 ?
-               (_cur - ((pauseOffset + initialTime + 1)) + seekOffset)*-1 :
-               (_cur - ((pauseOffset + initialTime + 1)) + seekOffset);
-        if (_cur > _dur) { return; }
-        if (_cur != undefined) {
-            var elSize = $("span#trackProgress-base.trackProgress-base").width();
-            if (!this.timeOutOfRange(MetaHelper.durationConverter(_cur, "seconds"), "seconds")) {
-                var _tPixelRatio = (_cur / _dur) * elSize;
-                $("section#trackProgress-wrap")[0].style.width = _tPixelRatio + "px";
+    updateProgressBar: function (currentTime, duration) {
+        // TODO: Try using a different element for animating the progressbar 
+        currentTime = (currentTime - ((pauseOffset + initialTime + 1)) + seekOffset) < 0 ?
+               (currentTime - ((pauseOffset + initialTime + 1)) + seekOffset) * - 1 :
+               (currentTime - ((pauseOffset + initialTime + 1)) + seekOffset);
+        if (currentTime > duration) { return; }
+        if (currentTime != undefined) {
+            if (!this.timeOutOfRange(MetaHelper.durationConverter(currentTime, "seconds"), "seconds")) {
+                var timePixelRatio = (currentTime / duration) * parentSize;
+                $progress.style.width = timePixelRatio + "px";
             } else {
                 clearInterval(progressBarInterval);
             }
@@ -59,8 +61,8 @@ var PlaybackSync = {
         }
     },
 
-    updateProgress: function (_t, _dur) {
-        if (_t != undefined) {
+    updateProgress: function (time, duration) {
+        if (time != undefined) {
             if (aContxt && bufferSource) {
                 if (aContxt.currentTime - (pauseOffset + initialTime + 1) > (bufferSource.buffer.duration ) &&
                             player.state != "playing" && player.state != "paused" ||
@@ -69,15 +71,15 @@ var PlaybackSync = {
 
             this.updateTime();
 
-            if (_dur.hours < 1) { _dur.hours = false; }
+            if (duration.hours < 1) { duration.hours = false; }
 
             if (!this.timeOutOfRange(CurrentTrack.time.secs, "seconds") &&
                 !this.timeOutOfRange(CurrentTrack.time.mins, "minutes") &&
                 !this.timeOutOfRange(CurrentTrack.time.hrs, "hours") ) {
 
-                if (_dur.hours > 0) {
+                if (duration.hours > 0) {
 
-                    $($cHrs[0]).text((CurrentTrack.time.hrs <= 9 && CurrentTrack.time.hrs >= 0) ? '0' + CurrentTrack.time.hrs + ":" : CurrentTrack.time.hrs + ":");
+                    $($cHrs[0]).text((CurrentTrack.time.hrs <= 9 && CurrentTrack.time.hrs >= 0) ? '0' + CurrentTrack.time.hrs + " : " : CurrentTrack.time.hrs + " : ");
                     $($cMins[0]).text((CurrentTrack.time.hrs) <= 9 || CurrentTrack.time.mins == 0 ? '0' + CurrentTrack.time.mins : CurrentTrack.time.mins);
                     $($cSecs[0]).text((CurrentTrack.time.secs) <= 9 || 0 ? "0" + CurrentTrack.time.secs : CurrentTrack.time.secs);
 
@@ -97,8 +99,6 @@ var PlaybackSync = {
         }
     },
 
-    // NOTE: Makes sure that the timer stops when the time is out of range.
-    // @bugs : This method does not take into consideration other elements like pause, seekOffset
     timeOutOfRange: function (time, period) {
         if (CurrentTrack && period && CurrentTrack.duration && CurrentTrack.duration != null) {
             if (parseInt(time > 0)) {
@@ -113,30 +113,26 @@ var PlaybackSync = {
         }
     },
 
-    /** @desc - overal progress update . */
-    PlaybackProgressBar: function (_cur, _dur) {
-        if (_cur != undefined) {
-            var dur;
-            if (_dur && typeof _dur != "object") {
-                dur = {
-                    hours: MetaHelper.durationConverter(_dur, 'hours'),
-                    minutes: (MetaHelper.durationConverter(_dur, 'hours') <= 0) ?
-                        parseInt(MetaHelper.durationConverter(_dur, 'minutes')) :
-                             "0" + MetaHelper.durationConverter(_dur, 'minutes'),
-                    seconds: MetaHelper.durationConverter(_dur, 'seconds')
+    /** @description - overal progress update . */
+    // TODO: Debug this progresbar , it has memory problems check what changed before we renamed the object to playbackSync 
+    PlaybackProgressBar: function (currentTime, duration) {
+        if (currentTime != undefined) {
+            if (duration && typeof duration != "object") {
+                duration = {
+                    hours: MetaHelper.durationConverter(duration, 'hours'),
+                    minutes: (MetaHelper.durationConverter(duration, 'hours') <= 0) ?
+                        parseInt(MetaHelper.durationConverter(duration, 'minutes')) :
+                             "0" + MetaHelper.durationConverter(duration, 'minutes'),
+                    seconds: MetaHelper.durationConverter(duration, 'seconds')
                 };
             } else {
-                dur = CurrentTrack.duration;
+                duration = CurrentTrack.duration;
             }
-            if (dur.minutes >= 60) { dur.minutes = ("0" + (dur.minutes - 60)).toString() }
-            if (dur.seconds >= 60) { dur.seconds = ("0" + (dur.seconds - 60)).toString() }
+            if (duration.minutes >= 60) { duration.minutes = ("0" + (duration.minutes - 60)).toString() }
+            if (duration.seconds >= 60) { duration.seconds = ("0" + (duration.seconds - 60)).toString() }
             // Reset the track progress time .
-            CurrentTrack.start = "00:00:00";
-            CurrentTrack.end = dur.hours + ":" + dur.minutes + ":" + dur.seconds;
-
-            $($dHrs[0]).text((dur.hours > 0) ? dur.hours + ":" : "");
-            $($dMins[0]).text(dur.minutes);
-            $($dSecs[0]).text(dur.seconds);
+            CurrentTrack.start = "00 : 00 : 00";
+            CurrentTrack.end = duration.hours + " : " + duration.minutes + " : " + duration.seconds;
 
             if (CurrentTrack.time.secs == null) {
                 $($cHrs[0]).text("");
@@ -148,24 +144,27 @@ var PlaybackSync = {
                 if (player.state != "stopped" || player.state == "paused" || player.state == "playing") {
                     if (aContxt && aContxt.state != "closed") {
                         if (bufferSource && aContxt) {
-                            PlaybackSync.updateProgressBar(aContxt.currentTime, bufferSource.buffer.duration);
+                            playbackSync.updateProgressBar(aContxt.currentTime, bufferSource.buffer.duration);
                         }
-                    } else if (PlaybackSync.videoPlaying()) {
+                    } else {
                         var currentTime = $videoPlayer.currentTime;
                         var duration = $videoPlayer.duration;
-                        PlaybackSync.updateProgressBar(currentTime, duration);
+                        playbackSync.updateProgressBar(currentTime, duration);
                     }
                 } else {
                     clearInterval(progressBarInterval);
                 }
-            }, this.progressBarUpdateRate(_dur));
+            }, this.progressBarUpdateRate(duration));
 
             progressTimeInterval = setInterval(function () {
+                $($dHrs[0]).text((duration.hours > 0) ? duration.hours + " : " : "");
+                $($dMins[0]).text(duration.minutes);
+                $($dSecs[0]).text(duration.seconds);
                 if (player.state != "stopped" && player.state == "playing") {
                     if (aContxt && aContxt.state != "closed") {
-                        PlaybackSync.updateProgress(CurrentTrack.time, _dur);
+                        playbackSync.updateProgress(CurrentTrack.time, duration);
                      } else {
-                        PlaybackSync.updateProgress(CurrentTrack.time, _dur);
+                        playbackSync.updateProgress(CurrentTrack.time, duration);
                      }
                 } else {
                     clearInterval(progressTimeInterval);
@@ -184,39 +183,15 @@ var PlaybackSync = {
         }
     },
 
-    trimTitle: function (title) {
-        if (title && title.length > 60) {
-            return (title.slice(0, 57)) + "...";
-        } else {
-            return title || "Unknown Title";
-        }
-    },
-
-    trimAlbum: function (album) {
-        if (album && album.length > 13) {
-            return album.slice(0, 13);
-        } else {
-            return album ||  "Unknown Album";
-        }
-    },
-
-    trimArist: function (artist) {
-        if (artist && artist.length > 12) {
-            return artist.slice(0, 13);
-        } else {
-            return artist || "Unknown Artist";
-        }
-    },
-
     resetTracktDetailsVisuals: function () {
         $($("#musicName"))
 					.text("")
 					.show()
-					.text(this.trimTitle(MetaHelper.parseFileName(CurrentTrack.name)));
+					.text(MetaHelper.parseFileName(CurrentTrack.name).trimEntity(45));
         $($("#musicAlbum"))
                     .text("")
                     .show()
-                    .text(this.trimAlbum(CurrentTrack.album));
+                    .text(CurrentTrack.album.trimEntity(17));
         $(".timeLeft").show();
         $(".SongDuration").show();
 
@@ -229,25 +204,25 @@ var PlaybackSync = {
 
     ResetPlayback: function () {
         aContxt = null;
-        PlaybackSync.PlaybackProgressBar();
+        playbackSync.PlaybackProgressBar();
         aContxt = new AudioContext();
     },
 
-    changeVolume: function (_volVal) {
+    changeVolume: function (volVal) {
         if (player.state && player.state !== "paused" && bufferSource && aContxt) {
-            if (_volVal && !undefined)
-                volume = _volVal;
-                gainNode.gain.value = _volVal;
+            if (volVal && !undefined)
+                volume = volVal;
+                gainNode.gain.value = volVal;
         }
     },
 
-    /** @desc - Sets the current playing tracking details  */
+    /** @description - Sets the current playing tracking details  */
     SetCurrentTrack: function (title, index) {
         CurrentTrack = new Object({
-            name: PlaybackSync.trimTitle(meta[index].source.name),
-            title: PlaybackSync.trimTitle(meta[index].title),
-            artist: PlaybackSync.trimArist(meta[index].artist),
-            album: PlaybackSync.trimArist(meta[index].album),
+            name: meta[index].name,
+            title: meta[index].title.trimEntity(45),
+            artist: meta[index].artist[0].trimEntity(17),
+            album: meta[index].album.trimEntity(17),
             artwork: meta[index].artwork,
             start: null,
             end: null,
@@ -260,7 +235,7 @@ var PlaybackSync = {
             lastStartTime: null,
             index: index,
             size: null,
-            playbackPosition: 0 // [ms]
+            playbackPosition: 0
         });
     },
 
@@ -292,9 +267,9 @@ var PlaybackSync = {
         }
     },
 
-    /** @returns {Number} - track index to be played next */
+    /** @returns {Number} track index to be played next */
     getNextTrack: function (index) {
-        var randomTrack;
+        var trackIndex;
         lastIndex = (function () {
             if (index == undefined) {
                 if (CurrentTrack != null) {
@@ -309,40 +284,41 @@ var PlaybackSync = {
         if (nextPlaybackIndex.length > 0) {
             return nextPlaybackIndex.shift();
         } else if (ShuffleOn) {
-            randomTrack = Math.floor(Math.random() * meta.length - 1);
-            if (lastIndex != undefined && randomTrack == lastIndex) {
+            trackIndex = Math.floor(Math.random() * meta.length - 1);
+            if (lastIndex != undefined && trackIndex == lastIndex) {
                 this.setNextTrack(lastIndex);
             } else {
-                return randomTrack;
+                return trackIndex;
             }
         } else {
             if (preTrackIndex.length > 0) {
                 if (ShuffleOn) {
-                    randomTrack = Math.floor(Math.random() * meta.length - 1);
-                    if (lastIndex != undefined && randomTrack == lastIndex) {
+                    trackIndex = Math.floor(Math.random() * meta.length - 1);
+                    if (lastIndex != undefined && trackIndex == lastIndex) {
                         this.setNextTrack(lastIndex);
                     } else {
-                        return randomTrack;
+                        return trackIndex;
                     }
                 } else {
                     if (parseInt(preTrackIndex[preTrackIndex.length - 1]) + 1 > meta.length - 1) {
                         return 0;
                     } else {
-                        randomTrack = parseInt(preTrackIndex[preTrackIndex.length - 1]) + 1;
-                        if (lastIndex != undefined && randomTrack == lastIndex) {
-                            this.setNextTrack(lastIndex);
+                        var pre = parseInt(preTrackIndex[preTrackIndex.length - 1]);
+                        trackIndex = handlers.nextTrackFromTrackList(pre);                        
+                        if (lastIndex != undefined && trackIndex == lastIndex) {
+                            this.setNextTrack();
                         } else {
-                            return randomTrack;
+                            return trackIndex;
                         }
                     }
                 }
             } else {
                 if (ShuffleOn) {
-                    randomTrack = Math.floor(Math.random() * meta.length - 1);
-                    if (lastIndex != undefined && randomTrack == lastIndex) {
+                    trackIndex = Math.floor(Math.random() * meta.length - 1);
+                    if (lastIndex != undefined && trackIndex == lastIndex) {
                         this.setNextTrack(lastIndex);
                     } else {
-                        return randomTrack;
+                        return trackIndex;
                     }
                 } else {
                     return 0;
@@ -352,27 +328,30 @@ var PlaybackSync = {
     },
 
     bufferReady: false,
+    togglePlaybackTimeout: false,
 
     loadTrack: function (event) {
-        if (PlaybackSync.videoPlaying()) {
-            eventHandler.togglePlaybackControls();
-            eventHandler.toggleVideoPlayer();
+        if (playbackSync.videoPlaying()) {
+            handlers.togglePlaybackControls();
+            handlers.toggleVideoPlayer();
         } else {
             if (player && player.state === "playing" || player.state == "paused") {
                 //<debug>
                 // @bug - rapid playback toggle from user interaction causes bugs to happen .
                 // Test how long it takes to toggle a playback and test if the bug to rapid user
                 // interaction still exist.
+                // I think this bug is only on windows because it works fine on mac .
                 //</debug>
                 console.time("[Playback Toggle]");
-                PlaybackSync.togglePlayback();
+                clearTimeout(this.togglePlaybackTimeout);
+                this.togglePlaybackTimeout = setTimeout(playbackSync.togglePlayback, 1000);
                 console.timeEnd("[Playback Toggle]");
             } else {
                 if (meta.length > 0) {
 
-                    var nextTrack = PlaybackSync.getNextTrack();
+                    var nextTrack = playbackSync.getNextTrack();
 
-                    eventHandler.toggleActiveTrack(nextTrack);
+                    handlers.toggleActiveTrack(nextTrack);
 
                     Buffering = true;
 
@@ -380,13 +359,12 @@ var PlaybackSync = {
 
                     preTrackIndex.push(parseInt(nextTrack));
 
-                    PlaybackSync.SetCurrentTrack(meta[nextTrack].name, nextTrack);
-                    PlaybackSync.EndAudioPlayback(false);
-                    PlaybackSync.resetTracktDetailsVisuals();
-                    PlaybackSync.Play(nextTrack);
+                    playbackSync.SetCurrentTrack(meta[nextTrack].name, nextTrack);
+                    playbackSync.EndAudioPlayback(false);
+                    playbackSync.resetTracktDetailsVisuals();
+                    playbackSync.Play(nextTrack);
 
                     player.state = "playing";
-
                 }
             }
         }
@@ -395,75 +373,64 @@ var PlaybackSync = {
     loadNextTrack: function (nextTrack) {
         if (player.state === "stopped" && preTrackIndex.length > 0) {
             if (Buffering) return;
-
-            eventHandler.toggleActiveTrack(nextTrack);
+            handlers.toggleActiveTrack(nextTrack);
             Buffering = true;
+            
             preTrackIndex.push(parseInt(nextTrack));
-
-            PlaybackSync.EndAudioPlayback(false);
-            PlaybackSync.resetTracktDetailsVisuals();
-            PlaybackSync.SetCurrentTrack(meta[nextTrack].name, nextTrack);
-            PlaybackSync.SetDefaultPosterImage();
-            PlaybackSync.Play(nextTrack);
-
+            playbackSync.EndAudioPlayback(false);
+            playbackSync.resetTracktDetailsVisuals();
+            playbackSync.SetCurrentTrack(meta[nextTrack].name, nextTrack);
+            playbackSync.SetDefaultPosterImage();
+            playbackSync.Play(nextTrack);
         } else {
             if (!nextPlaybackIndex.length > 0) {
-                PlaybackSync.setNextTrack(nextTrack);
+                playbackSync.setNextTrack(nextTrack);
             }
         }
     },
 
     loadPreviousTrack: function (selectedTrackIndex) {
         if (Buffering || preTrackIndex.length === 1 || preTrackIndex.length === 0 ||
-             CurrentTrack.name == meta[preTrackIndex[preTrackIndex.length - 1]].source.name) { return; }
+             CurrentTrack.name == meta[preTrackIndex[preTrackIndex.length - 1]].name) { return; }
         if (player.state === "playing" && player.state != "paused" && preTrackIndex.length > 0) {
-
-            eventHandler.toggleActiveTrack(selectedTrackIndex);
-
+            handlers.toggleActiveTrack(selectedTrackIndex);
             Buffering = true;
-
             var previousTrackIndex = (preTrackIndex == 1) ? selectedTrackIndex : selectedTrackIndex;
 
             preTrackIndex.push(parseInt(previousTrackIndex));
-
-            PlaybackSync.SetCurrentTrack(meta[previousTrackIndex].name, previousTrackIndex);
-            PlaybackSync.EndAudioPlayback(true);
-            PlaybackSync.resetTracktDetailsVisuals();
-            PlaybackSync.SetDefaultPosterImage();
-            PlaybackSync.Play(previousTrackIndex);
-
-
+            playbackSync.SetCurrentTrack(meta[previousTrackIndex].name, previousTrackIndex);
+            playbackSync.EndAudioPlayback(true);
+            playbackSync.resetTracktDetailsVisuals();
+            playbackSync.SetDefaultPosterImage();
+            playbackSync.Play(previousTrackIndex);
         } else {
             previousPlaybackIndex = (preTrackIndex.length > 0) ? preTrackIndex.pop() : null;
         }
     },
 
+    virtualize: (analyser) => oVirtualize(analyser),
 
-    virtualize: function (analyser) {
-        oVirtualize(analyser);
-    },
-
-    AttachPlayer: function (index, _el) {
+    AttachPlayer: function (index, ele) {
         if (Buffering) { return; }
         Buffering = true;
 
-        if (_el) { PlaybackSync.SetCurrentTrack(_el) }
-        else { PlaybackSync.SetCurrentTrack(meta[index].name, index) }
+        if (ele) { playbackSync.SetCurrentTrack(ele) }
+        else { playbackSync.SetCurrentTrack(meta[index].name, index) }
 
         $('#inputIndex').val(index);
 
-        PlaybackSync.Play(index);
+        playbackSync.Play(index);
     },
 
     HardReset: function () {
-        PlaybackSync.SoftReset("video");
-        PlaybackSync.SoftReset("audio", false);
+        playbackSync.SoftReset("video");
+        playbackSync.SoftReset("audio", false);
     },
 
     SoftReset: function (type, controlled) {
         if (type == "video") {
 
-            eventHandler.resetMusicDetailsVisuals();
+            handlers.resetMusicDetailsVisuals();
 
             Buffering = false;
 
@@ -497,11 +464,11 @@ var PlaybackSync = {
 
             CurrentTrack.lastStartTime = 0;
 
-            PlaybackSync.PlaybackProgressBar();
+            playbackSync.PlaybackProgressBar();
 
-            eventHandler.resetMusicDetailsVisuals();
+            handlers.resetMusicDetailsVisuals();
 
-            player.state = false;
+            Buffering = false;
         }
     },
 
@@ -513,35 +480,27 @@ var PlaybackSync = {
             $videoPlayer.loop = false;
             if (player.state == "paused" || player.state == "playing") {
                 processor.end();
-                PlaybackSync.PlaybackProgressBar();
-                eventHandler.togglePlaybackControls();
-                PlaybackSync.HardReset();
+                playbackSync.PlaybackProgressBar();
+                handlers.togglePlaybackControls();
+                playbackSync.HardReset();
             } else {
                 processor.end();
-                PlaybackSync.PlaybackProgressBar();
-                PlaybackSync.EndAudioPlayback(true);
-                PlaybackSync.SoftReset("video");
+                playbackSync.PlaybackProgressBar();
+                playbackSync.EndAudioPlayback(true);
+                playbackSync.SoftReset("video");
             }
         } else {
             if (typeof ev == "undefined") {
-                PlaybackSync.PlaybackProgressBar();
-                eventHandler.resetMusicDetailsVisuals();
-                PlaybackSync.SoftReset("video");
+                playbackSync.PlaybackProgressBar();
+                handlers.resetMusicDetailsVisuals();
+                playbackSync.SoftReset("video");
             } else {
-                PlaybackSync.PlaybackProgressBar();
-                eventHandler.resetMusicDetailsVisuals();
-                PlaybackSync.HardReset();
-                PlaybackSync.AutoPlay();
+                playbackSync.PlaybackProgressBar();
+                handlers.resetMusicDetailsVisuals();
+                playbackSync.HardReset();
+                playbackSync.AutoPlay();
             }
         }
-    },
-
-    getVideoPosterImage: function () {
-        return null;
-    },
-
-    getAudioPosterImage: function () {
-        return null;
     },
 
     SetDefaultPosterImage: function () {
@@ -550,28 +509,21 @@ var PlaybackSync = {
         $videoPlayer.backgroundPosition = "280px 100px";
     },
 
-    videoProgress: function (ev) {
-        startOffset = 0;
-        pauseTime = 0;
-        seekOffset = 0;
-        PlaybackSync.updateProgressBar(ev.timeStamp, ev.path[0].duration);
-    },
-
-    // NOTE: vidio playbacks are handled by the eventHandler
+    // NOTE: vidio playbacks execution is done by the handler
     PauseVideoPlayback: function () {
         console.time("[video toggleplayback]");
-        PlaybackSync.PlaybackProgressBar();
-        eventHandler.togglePlaybackControls();
+        playbackSync.PlaybackProgressBar();
+        handlers.togglePlaybackControls();
         console.time("[video toggleplayback]");
     },
 
-    PlayVideoPlayback: function (curTime, durTime) {
+    PlayVideoPlayback: function (current, duration) {
         console.time("[video toggleplayback]");
-        if (typeof curTime != "object") {
-            PlaybackSync.PlaybackProgressBar(curTime, durTime);
-            eventHandler.togglePlaybackControls();
+        if (typeof current != "object") {
+            playbackSync.PlaybackProgressBar(current, duration);
+            handlers.togglePlaybackControls();
         } else {
-            eventHandler.togglePlaybackControls();
+            handlers.togglePlaybackControls();
         }
         console.time("[video toggleplayback]");
     },
@@ -582,39 +534,33 @@ var PlaybackSync = {
 
         CurrentTrack.duration = duration;
 
-        PlaybackSync.resetTracktDetailsVisuals();
-        PlaybackSync.PlaybackProgressBar(currentTime, duration);
+        playbackSync.resetTracktDetailsVisuals();
+        playbackSync.PlaybackProgressBar(currentTime, duration);
     },
 
-    VideoPlayback: function (file, index) {
-        PlaybackSync.HardReset();
+    VideoPlayback: function (file, index , video) {
+        // playbackSync.HardReset();
 
         preTrackIndex.push(parseInt(index || preTrackIndex[preTrackIndex.length - 1]));
 
-        PlaybackSync.EndVideoPlayback();
-
         $($videoPlayer).show();
 
-        $($("div.left-side ul li:nth-child(5)")[0]).click();
-
+        video ? $($($videoTab)).click(): null
+        
         $videoPlayer.controls = false;
-        $videoPlayer.loop = ($("#RepeatToggle span").text() == 1);
-        $videoPlayer.onended = PlaybackSync.EndVideoPlayback;
-        $videoPlayer.onplay = PlaybackSync.PlayVideoPlayback;
-        $videoPlayer.onpause = PlaybackSync.PauseVideoPlayback;
-        $videoPlayer.style.marginLeft = "-15px";
-        // $videoPlayer.ontimeupdate = PlaybackSync.videoProgress;
-        $videoPlayer.src = URL.createObjectURL(file);
+        $videoPlayer.onended = playbackSync.EndVideoPlayback;
+        $videoPlayer.onplay = playbackSync.PlayVideoPlayback;
+        $videoPlayer.onpause = playbackSync.PauseVideoPlayback;
+        $videoPlayer.src = `file:///${file.path}`;// URL.createobjecturl();
 
-        eventHandler.togglePlaybackControls();
+        handlers.togglePlaybackControls();
 
-        $($videoPlayer).volume = eventHandler.convertVolumeVal($volumeRange.val());
+        $($videoPlayer).volume = handlers.convertVolumeVal($volumeRange.val());
 
         this.SetCurrentTrack(MetaHelper.parseFileName(file.name), index);
-        eventHandler.togglePlaybackControls();
+        handlers.togglePlaybackControls();
         $videoPlayer.oncanplaythrough = this.setVideoPlaybackDetails;
         Buffering = false;
-
     },
 
     resetPlaybackPOS: function () {
@@ -624,8 +570,7 @@ var PlaybackSync = {
         seekOffset = 0;
     },
 
-
-    /** @desc -  set time where to start playback from */
+    /** @description -  set time where to start playback from */
     setPlaybackPOS: function () {},
 
     changeTrackCurrentTime: function (time) {
@@ -637,31 +582,31 @@ var PlaybackSync = {
     ControlledPlayback: function (time) {
         if (player.state != "stopped" && !Buffering) {
 
-            PlaybackSync.PlaybackProgressBar();
+            playbackSync.PlaybackProgressBar();
 
-            if (PlaybackSync.videoPlaying()) {
+            if (playbackSync.videoPlaying()) {
                 $videoPlayer.currentTime = time;
 
-                PlaybackSync.changeTrackCurrentTime(time);
+                playbackSync.changeTrackCurrentTime(time);
 
             } else {
-                var curTime = aContxt.currentTime;
+                var currentTime = aContxt.currentTime;
                 player.state = false;
                 seekOffset = time;
                 startTime = seekOffset;
 
-                PlaybackSync.setPlaybackPOS(time);
+                playbackSync.setPlaybackPOS(time);
 
                 start = time;
                 bufferSource.stop(0);
 
-                PlaybackSync.EndAudioPlayback(true);
+                playbackSync.EndAudioPlayback(true);
 
-                seekOffset = seekOffset>curTime? seekOffset: seekOffset*-1;
+                seekOffset = seekOffset > currentTime ? seekOffset: seekOffset * -1;
 
                 processor.start();
 
-                PlaybackSync.changeTrackCurrentTime(time);
+                playbackSync.changeTrackCurrentTime(time);
 
                 start = null;
                 player.state = "playing";
@@ -680,41 +625,32 @@ var PlaybackSync = {
     },
 
     ResolvePlaybackQueue: function () {
-        if (PlaybackSync.Queue.next) {
-
-            player = new Player("stopped", meta[PlaybackSync.Queue.track].source, Player.DEFAULTS.REPEAT, Player.DEFAULTS.SHUFFLE, Player.DEFAULTS.VOLUME);
-            player.loadNextTrack(PlaybackSync.Queue.track);
-            player.state = "playing";
-
-            PlaybackSync.resetQueue();
-
+        if (playbackSync.Queue.next) {
+            player = new Player("stopped", meta[playbackSync.Queue.track].source, Player.DEFAULTS.REPEAT, Player.DEFAULTS.SHUFFLE, Player.DEFAULTS.VOLUME);
+            player.loadNextTrack(playbackSync.Queue.track);
+            playbackSync.resetQueue();
         } else {
-
-            player = new Player("stopped", PlaybackSync.Queue.track, Player.DEFAULTS.REPEAT, Player.DEFAULTS.SHUFFLE, Player.DEFAULTS.VOLUME);
-            player.loadPreviousTrack(PlaybackSync.Queue.track);
-
-            PlaybackSync.resetQueue();
-
+            player = new Player("stopped", playbackSync.Queue.track, Player.DEFAULTS.REPEAT, Player.DEFAULTS.SHUFFLE, Player.DEFAULTS.VOLUME);
+            player.loadPreviousTrack(playbackSync.Queue.track);
+            playbackSync.resetQueue();
         }
     },
 
-
     IsFirstQueue: function () {
-        PlaybackSync.Queue.track == undefined;
+        playbackSync.Queue.track == undefined;
     },
-
 
     RequestPlayback: function (index, direction) {
         if (index != undefined && !Buffering) {
-            if (!(PlaybackSync.IsFirstQueue())) { clearTimeout(self.queueTimeout) }
+            if (!(playbackSync.IsFirstQueue())) { clearTimeout(self.queueTimeout) }
             if (direction == "next") { preTrackIndex.push(index); }
 
-            PlaybackSync.SetCurrentTrack(meta[index].name, index);
-            PlaybackSync.resetTracktDetailsVisuals();
+            playbackSync.SetCurrentTrack(meta[index].name, index);
+            playbackSync.resetTracktDetailsVisuals();
 
             this.Queue(index, direction);
 
-            self.queueTimeout = setTimeout(PlaybackSync.ResolvePlaybackQueue, 3500);
+            self.queueTimeout = setTimeout(playbackSync.ResolvePlaybackQueue, 3500);
         }
     },
 
@@ -729,24 +665,24 @@ var PlaybackSync = {
     togglePlayback: function () {
         if (player.state != "paused" && player.state != "stopped") {
 
-            //NOTE: Pause function checks if its playing and progressbar checks if its paused .
-            PlaybackSync.Pause();
+            // NOTE: Pause function checks if its playing and progressbar checks if its paused .
+            playbackSync.Pause();
 
             player.state = "paused";
 
-            PlaybackSync.PlaybackProgressBar();
+            playbackSync.PlaybackProgressBar();
 
-            eventHandler.togglePlaybackControls();
+            handlers.togglePlaybackControls();
 
             $LogInfo("Paused", 0, null);
         } else {
             // pauseOffset = aContxt.currentTime - pauseTime;
 
-            PlaybackSync.Play();
+            playbackSync.Play();
 
             player.state = "playing";
 
-            eventHandler.togglePlaybackControls();
+            handlers.togglePlaybackControls();
 
             $LogInfo("Playing", 0, null);
         }
@@ -768,38 +704,20 @@ var PlaybackSync = {
         console.log("%c Pause time[ " + startTime + " ]", "color:green");
     },
 
-
     Play: function (index) {
         if (index != undefined) {
-
-            var IsVideo = (meta[index].source.name.search(/(.*)[.mp4|.webm|.ogg|.mkv|.vob]$/img) >= 0) ? true : false;
-
-            $("#inputIndex").val(index);
-
-            PlaybackSync.PlaybackProgressBar();
-            PlaybackSync.resetTracktDetailsVisuals();
-
-            eventHandler.toggleActiveTrack(index);
-
-            if (IsVideo) {
-                PlaybackSync.VideoPlayback(meta[index].source, index);
-            } else {
-                var reader = new FileReader();
-
-                reader.onloadend = function (eve) {
-                    if (eve)
-                        PlaybackSync.AudioPlayback(eve.target.result);
-                }
-
-                console.info("Reading ...");
-                reader.readAsArrayBuffer(meta[index].source);
-            }
+            var IsVideo = meta[index].name.isVideo();
+            playbackSync.PlaybackProgressBar();
+            playbackSync.resetTracktDetailsVisuals();
+            handlers.toggleActiveTrack(index);
+            console.info("Reading ...");
+            var file = new File(meta[index].path);
+            playbackSync.VideoPlayback(file, index, IsVideo);
         } else {
             processor.start();
         }
     },
-
-
+    
     /** @param {boolean} - Whether the playback end involved user interaction or an error . */
     EndAudioPlayback: function (controlled) {
         if (typeof controlled != undefined && bufferSource && aContxt) {
@@ -811,12 +729,12 @@ var PlaybackSync = {
                 previouslyPaused = false;
                 Buffering = false;
 
-                PlaybackSync.PlaybackProgressBar();
-                PlaybackSync.SoftReset("audio", controlled);
+                playbackSync.PlaybackProgressBar();
+                playbackSync.SoftReset("audio", controlled);
 
                 if (controlled) return;
 
-                eventHandler.resetMusicDetailsVisuals();
+                handlers.resetMusicDetailsVisuals();
 
                 this.AutoPlay();
             }
@@ -828,10 +746,10 @@ var PlaybackSync = {
         if (typeof LoopOn == "string") {
             if (aContxt && aContxt.state == "running") { processor.end() }
 
-            eventHandler.togglePlaybackControls();
+            handlers.togglePlaybackControls();
 
-            PlaybackSync.PlaybackProgressBar();
-            PlaybackSync.HardReset();
+            playbackSync.PlaybackProgressBar();
+            playbackSync.HardReset();
 
             Player.prototype.AttachPlayer(parseInt(preTrackIndex[preTrackIndex.length - 1]));
 
@@ -841,11 +759,11 @@ var PlaybackSync = {
 
                 var nextTrack = nextPlaybackIndex.shift();
 
-                PlaybackSync.PlaybackProgressBar();
-                PlaybackSync.HardReset();
+                playbackSync.PlaybackProgressBar();
+                playbackSync.HardReset();
 
-                eventHandler.togglePlaybackControls();
-                eventHandler.toggleActiveTrack(nextTrack);
+                handlers.togglePlaybackControls();
+                handlers.toggleActiveTrack(nextTrack);
 
                 Player.prototype.AttachPlayer(nextTrack);
 
@@ -867,10 +785,10 @@ var PlaybackSync = {
                         nextTrack = Math.floor(Math.random() * meta.length - 1);
                     }
 
-                    PlaybackSync.HardReset();
-                    PlaybackSync.PlaybackProgressBar();
+                    playbackSync.HardReset();
+                    playbackSync.PlaybackProgressBar();
 
-                    eventHandler.toggleActiveTrack(nextTrack);
+                    handlers.toggleActiveTrack(nextTrack);
 
                     preTrackIndex.push(nextTrack);
 
@@ -878,14 +796,10 @@ var PlaybackSync = {
 
                 } else {
                     if (aContxt && aContxt.state == "running") { processor.end() }
-
                     processor.end();
-
-                    PlaybackSync.HardReset();
-                    PlaybackSync.PlaybackProgressBar();
-
-                    eventHandler.togglePlaybackControls();
-
+                    playbackSync.HardReset();
+                    playbackSync.PlaybackProgressBar();
+                    handlers.togglePlaybackControls();
                 }
             }
         }
